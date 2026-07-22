@@ -1,97 +1,147 @@
-<script setup></script>
-
 <template>
-  <div class="menu1">
-  </div>
-    <nav class="menu2">
-        <div class="boton-menu">
-            <button>
-            
-            </button>
-           
-        </div>
-        <div class="iconos">
-
-        </div>
-        <div class="fecha-hora">
-
-        </div>
-        <div class="paneles">
-
-        </div>
-    </nav>
+  <nav class="menu2">
+    <div class="boton-menu">
+      <button class="boton-inicio"></button>        
+    </div>
+    <div class="iconos">
+      <Barra/>            
+    </div>
+    <div class="reloj-container">
+      <div class="reloj-glow"></div>
+      <div class="reloj">
+        {{ hora }}
+      </div>
+    </div>
+    <div class="paneles"></div>
+  </nav>
 </template>
 
+<script setup>
+import Barra from "./componentes/Barra.vue"
+import { ref, onMounted, onUnmounted } from 'vue'
+
+const hora = ref('')
+let intervalId = null
+
+function actualizarHora() {
+  const ahora = new Date()
+  const horas = String(ahora.getHours()).padStart(2, '0')
+  const minutos = String(ahora.getMinutes()).padStart(2, '0')
+  hora.value = `${horas}:${minutos}`
+}
+
+onMounted(() => {
+  actualizarHora()
+  intervalId = setInterval(actualizarHora, 1000)
+})
+
+onUnmounted(() => {
+  if (intervalId) clearInterval(intervalId)
+})
+</script>
+
 <style>
-  .menu1{
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 100vh;
-    background-color:rgb(182, 179, 25);
-    overflow: hidden;
-    
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
-  .menu2{
+
+  .menu2 {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     gap: 8px;
-    width: 95%;
     overflow: hidden;
-    width:100%;
-    left:0;
-    height:48px;
-    position:absolute;
-    bottom:0;
-    border: 2px solid rgba(73, 5, 70, 0.7);
-    border-radius: 10px;
-    background:
-        radial-gradient(circle at center, rgba(61, 7, 68, 0.37), transparent 70%),
-        linear-gradient(#02061a, #32033f);
-      
-    box-shadow:
-         1px 2px 5px rgba(82, 4, 112, 0.692),
-         2px 3px 6px rgb(77, 4, 77);
-    
+    width: 100%;
+    left: 0;
+    height: 100%;
+    position: absolute;
+    bottom: 0;
   }
-.boton-menu{
-    grid-column: 1 / 2 ; 
+
+  .boton-menu {
+    grid-column: 1 / 2; 
     display: flex;
-    align-items: center;
-    
-}
-.boton-menu button{
-     width: 50px;
-    height: 50px;
-    background-image: url("/logo.png");
-    background-size: 48px 48px;
-    background-repeat: no-repeat;
-     background-position: center;
+    margin-left: 10px;
+  }
+
+  .boton-inicio {
+    margin-top: 2px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
     background-color: transparent;
     border: none;
-    border-radius: 50%;
-}
-.boton-menu button:hover{
-    border: 2px solid rgba(130, 40, 214, 0.699);
-}
+    background-image: url("/logo.png");
+    background-size: 100% 100%;
+  }
 
-.iconos{
-        grid-column: 2 / 6 ; 
-        display: flex;
-        align-items: center;
-        background-color: white;
-}
-.fecha-hora{
-        grid-column: 6 / 8 ; 
-        display: flex;
-        align-items: center;
-        background-color: white;
-}
-.paneles{
-    grid-column: 8 / 12 ; 
+  .boton-inicio:hover {
+    border: 2px solid rgba(130, 40, 214, 0.699);
+  }
+
+  .iconos {
+    grid-column: 2 / 6; 
+    display: flex;
+  }
+
+  /* ===== RELOJ ESTILO IMAGEN ===== */
+  .reloj-container {
+    grid-column: 6 / 8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    height: 48px;
+  }
+
+  .reloj-glow {
+    position: absolute;
+    width: 120px;
+    height: 40px;
+    border-radius: 20px;
+    background: rgba(138, 43, 226, 0.15);
+    filter: blur(12px);
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .reloj {
+    position: relative;
+    z-index: 1;
+    font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: #c084fc;
+    letter-spacing: 4px;
+    text-shadow: 
+      0 0 5px #a855f7,
+      0 0 10px #9333ea,
+      0 0 20px #7e22ce,
+      0 0 40px rgba(126, 34, 206, 0.5);
+    padding: 0 12px;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+  }
+
+  /* Separador parpadeante (:) */
+  .reloj::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 2px;
+    height: 20px;
+    background: transparent;
+  }
+
+  .paneles {
+    grid-column: 8 / 12; 
     display: flex;
     align-items: center;
     background-color: white;
-}
-
+  }
 </style>

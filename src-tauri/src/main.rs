@@ -1,30 +1,30 @@
-use tauri::Manager;
+use tauri::{Manager, PhysicalPosition, PhysicalSize};
 
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
             let window = app.get_webview_window("main").unwrap();
-            
-            // Forzar transparencia
+
             #[cfg(target_os = "linux")]
             {
-                // La transparencia debe ser manejada por el compositor
-                // Asegurar que la ventana sea transparente
+                // Mantener la ventana siempre encima
                 let _ = window.set_always_on_top(true);
-                
-                if let Some(monitor) = window.current_monitor().unwrap() {
+
+                if let Some(monitor) = window.current_monitor()? {
                     let screen_size = monitor.size();
+
                     let width = screen_size.width;
-                    let height = screen_size.height / 2;
-                    let x = 0;
+                    let height = 48u32;
+
+                    // Posicionar la ventana en la parte inferior
+                    let x = 0i32;
                     let y = (screen_size.height - height) as i32;
-                    
-                    use tauri::{PhysicalPosition, PhysicalSize};
-                    let _ = window.set_size(PhysicalSize { width, height });
-                    let _ = window.set_position(PhysicalPosition { x, y });
+
+                    let _ = window.set_size(PhysicalSize::new(width, height));
+                    let _ = window.set_position(PhysicalPosition::new(x, y));
                 }
             }
-            
+
             Ok(())
         })
         .run(tauri::generate_context!())
