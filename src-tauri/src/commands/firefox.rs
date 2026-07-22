@@ -4,7 +4,6 @@ use tauri::command;
 
 #[command]
 pub fn launch_firefox() -> Result<String, String> {
-    // Comando para lanzar Firefox
     match Command::new("firefox")
         .spawn() {
             Ok(_) => Ok("Firefox lanzado exitosamente".to_string()),
@@ -14,7 +13,6 @@ pub fn launch_firefox() -> Result<String, String> {
 
 #[command]
 pub fn launch_firefox_with_url(url: String) -> Result<String, String> {
-    // Lanzar Firefox con una URL específica
     match Command::new("firefox")
         .arg(&url)
         .spawn() {
@@ -25,7 +23,6 @@ pub fn launch_firefox_with_url(url: String) -> Result<String, String> {
 
 #[command]
 pub fn launch_firefox_private() -> Result<String, String> {
-    // Lanzar Firefox en modo privado
     match Command::new("firefox")
         .arg("--private-window")
         .spawn() {
@@ -36,7 +33,6 @@ pub fn launch_firefox_private() -> Result<String, String> {
 
 #[command]
 pub fn launch_firefox_kiosk() -> Result<String, String> {
-    // Lanzar Firefox en modo kiosko (pantalla completa)
     match Command::new("firefox")
         .arg("--kiosk")
         .spawn() {
@@ -45,21 +41,11 @@ pub fn launch_firefox_kiosk() -> Result<String, String> {
         }
 }
 
-#[command]
-pub fn launch_firefox_profile(profile: String) -> Result<String, String> {
-    // Lanzar Firefox con un perfil específico
-    match Command::new("firefox")
-        .arg("-P")
-        .arg(&profile)
-        .spawn() {
-            Ok(_) => Ok(format!("Firefox con perfil '{}' lanzado", profile)),
-            Err(e) => Err(format!("Error: {}", e))
-        }
-}
+// ELIMINAR esta función porque no se usa:
+// pub fn launch_firefox_profile(profile: String) -> Result<String, String> { ... }
 
 #[command]
 pub fn check_firefox_installed() -> Result<bool, String> {
-    // Verificar si Firefox está instalado
     match Command::new("which")
         .arg("firefox")
         .output() {
@@ -70,7 +56,6 @@ pub fn check_firefox_installed() -> Result<bool, String> {
 
 #[command]
 pub fn get_firefox_version() -> Result<String, String> {
-    // Obtener la versión de Firefox
     match Command::new("firefox")
         .arg("--version")
         .output() {
