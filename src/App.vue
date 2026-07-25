@@ -57,6 +57,7 @@ onUnmounted(() => {
     height: 100%;
     position: absolute;
     bottom: 0;
+    background-color:  rgba(43, 7, 77, 0.699);
   }
 
   .boton-menu {
@@ -142,6 +143,6 @@ onUnmounted(() => {
     grid-column: 8 / 12; 
     display: flex;
     align-items: center;
-    background-color: white;
+    
   }
 </style>

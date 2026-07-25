@@ -16,69 +16,38 @@ const iconos = ref([
     {nombre: "papelera", comando: "gio trash", icono: "papelera.png"}
 ])
 
-const lanzarApp = async (icono) => {
-    try {
-        console.log(`Lanzando: ${icono.nombre}`)
-        
-        // Usar comandos específicos según la aplicación
-        switch(icono.nombre) {
-            case 'firefox':
-                await invoke('launch_firefox')
-                break
-            case 'terminal':
-                // Usar Kitty con diferentes opciones
-                // Opción 1: Terminal normal
-                await invoke('launch_terminal')
-                
-                // Opción 2: Terminal en un directorio específico (descomentar para usar)
-                // await invoke('launch_terminal_with_directory', { directory: '/home/usuario' })
-                
-                // Opción 3: Terminal ejecutando un comando (descomentar para usar)
-                // await invoke('launch_terminal_with_command', { command: 'htop' })
-                
-                // Opción 4: Terminal en pantalla completa (descomentar para usar)
-                // await invoke('launch_terminal_fullscreen')
-                
-                // Opción 5: Terminal con título (descomentar para usar)
-                // await invoke('launch_terminal_with_title', { title: 'Mi Terminal' })
-                break
-            case 'vscode':
-                await invoke('launch_app', { command: 'code' })
-                break
-            case 'archivos':
-                await invoke('launch_app', { command: 'nautilus' })
-                break
-            case 'papelera':
-                await invoke('launch_app', { command: 'gio trash' })
-                break
-            default:
-                await invoke('launch_app', { command: icono.comando })
-        }
-        
-        console.log(`✅ ${icono.nombre} lanzado correctamente`)
-    } catch (error) {
-        console.error(`❌ Error al lanzar ${icono.nombre}:`, error)
-        alert(`No se pudo lanzar "${icono.nombre}". Verifica que esté instalado.`)
+const lanzarApp = (icono) => {
+    console.log(`Lanzando: ${icono.nombre}`)
+    
+    switch(icono.comando) {  // ← Usando icono.comando
+        case 'firefox':
+            invoke('launch_firefox')
+                .then(() => console.log(`✅ ${icono.nombre} lanzado`))
+                .catch((error) => {
+                    console.error(`❌ Error:`, error)
+                    alert(`No se pudo lanzar "${icono.nombre}"`)
+                })
+            break
+        case 'kitty':
+            invoke('launch_terminal')
+                .then(() => console.log(`✅ ${icono.nombre} lanzado`))
+                .catch((error) => {
+                    console.error(`❌ Error:`, error)
+                    alert(`No se pudo lanzar "${icono.nombre}"`)
+                })
+            break
+        case "code":
+            invoke("launch_vscode")
+            .then(()=>console.log(`✅ ${icono.nombre} lanzado`))
+            .catch((error) => {
+                    console.error(`❌ Error:`, error)
+                    alert(`No se pudo lanzar "${icono.nombre}"`)
+                })
+            break    
+        default:
+            console.log(`⏳ ${icono.nombre} - Pendiente de implementar`)
     }
 }
-
-// Función para verificar apps instaladas (opcional)
-const verificarApps = async () => {
-    try {
-        const kittyInstalado = await invoke('check_kitty_installed')
-        console.log(`Kitty instalado: ${kittyInstalado}`)
-        
-        if (kittyInstalado) {
-            const version = await invoke('get_kitty_version')
-            console.log(`Versión de Kitty: ${version}`)
-        }
-    } catch (error) {
-        console.error('Error verificando apps:', error)
-    }
-}
-
-// Ejecutar verificación al montar
-verificarApps()
 </script>
 
 <style scoped>
@@ -91,12 +60,30 @@ verificarApps()
         border: none;
         cursor: pointer;
         transition: all 0.2s ease;
+
     }
     .botones:hover {
         transform: scale(1.1);
+        animation: animar .5s infinite linear;
+         
     }
+ 
     .imagen{
         width: 100%;
         height: 100%;
+    }
+    @keyframes animar {
+        0%{
+            margin-top: 0;
+        }
+        30%{
+            margin-top: -5px;
+        }
+        80%{
+            margin-top: 5px;
+        }
+        100%{
+            margin-top: 0;
+        }        
     }
 </style>
