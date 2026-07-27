@@ -5,6 +5,9 @@ mod commands {
     pub mod firefox;
     pub mod terminal;
     pub mod vscode;
+    pub mod apagar;
+    pub mod reiniciar;
+    pub mod cerrar;
 }
 
 use tauri::{Manager, PhysicalPosition, PhysicalSize};
@@ -36,6 +39,9 @@ fn main() {
             commands::firefox::launch_firefox,
             commands::terminal::launch_terminal,
             commands::vscode::launch_vscode,
+            commands::apagar::apagar_sistema,
+            commands::reiniciar::reiniciar_sistema,
+            commands::cerrar::cerrar_sesion,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

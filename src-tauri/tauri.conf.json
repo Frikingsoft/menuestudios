@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "menuestudios",
   "version": "0.1.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "com.frikingsoft.menuestudios",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173",
@@ -44,6 +44,11 @@
     ],
     "android": {
       "debugApplicationIdSuffix": ".debug"
-    }
+    },
+    "publisher": "frikingsoft",
+    "copyright": "Copyright 2024",
+    "category": "Utility",
+    "shortDescription": "Menú de aplicaciones para Linux",
+    "longDescription": "Un menú minimalista para lanzar aplicaciones en Linux"
   }
 }
