@@ -8,6 +8,7 @@ mod commands {
     pub mod apagar;
     pub mod reiniciar;
     pub mod cerrar;
+    pub mod ram;
 }
 
 use tauri::{Manager, PhysicalPosition, PhysicalSize};
@@ -42,6 +43,7 @@ fn main() {
             commands::apagar::apagar_sistema,
             commands::reiniciar::reiniciar_sistema,
             commands::cerrar::cerrar_sesion,
+            commands::ram::get_ram_percentage,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
