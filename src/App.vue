@@ -1,10 +1,11 @@
 <template>
-  <nav class="menu2">
+  <nav class="menu2" >
     <div class="boton-menu">
       <button class="boton-inicio"></button>        
     </div>
     <div class="iconos">
-      <Barra/>            
+      <Barra/>
+      {{ mostrar }}            
     </div>
     <div class="reloj-container">
       <div class="reloj-glow"></div>
@@ -25,6 +26,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 const horas = ref('00')
 const minutos = ref('00')
 let intervalId = null
+const mostrar = ref(true)
 
 function actualizarHora() {
   const ahora = new Date()
@@ -59,6 +61,8 @@ onUnmounted(() => {
     height: 100%;
     position: absolute;
     bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
   }
 
   .boton-menu {
