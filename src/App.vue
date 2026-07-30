@@ -1,5 +1,5 @@
 <template>
-  <nav class="menu2" >
+  <nav :class="['menu2', { 'nav-oculto': !navVisible }]">
     <div class="boton-menu">
       <button class="boton-inicio"></button>        
     </div>
@@ -22,11 +22,15 @@
 <script setup>
 import Barra from "./componentes/Barra.vue"
 import { ref, onMounted, onUnmounted } from 'vue'
+import { listen } from '@tauri-apps/api/event'
 
 const horas = ref('00')
 const minutos = ref('00')
 let intervalId = null
 const mostrar = ref(true)
+const navVisible = ref(true)
+
+let unlisten = null
 
 function actualizarHora() {
   const ahora = new Date()
@@ -34,13 +38,19 @@ function actualizarHora() {
   minutos.value = String(ahora.getMinutes()).padStart(2, '0')
 }
 
-onMounted(() => {
+onMounted(async () => {
   actualizarHora()
   intervalId = setInterval(actualizarHora, 1000)
+
+  // Escuchar el evento que viene desde Rust cuando apretás Alt+Espacio
+  unlisten = await listen('toggle-nav', () => {
+    navVisible.value = !navVisible.value
+  })
 })
 
 onUnmounted(() => {
   if (intervalId) clearInterval(intervalId)
+  if (unlisten) unlisten()
 })
 </script>
 
@@ -63,6 +73,14 @@ onUnmounted(() => {
     bottom: 0;
     background: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(10px);
+    
+    /* Animación suave para ocultar/mostrar */
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Se desliza hacia abajo fuera de la pantalla */
+  .menu2.nav-oculto {
+    transform: translateY(100%);
   }
 
   .boton-menu {

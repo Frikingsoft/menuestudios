@@ -1,4 +1,3 @@
-// src-tauri/src/main.rs
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod commands {
@@ -11,10 +10,20 @@ mod commands {
     pub mod ram;
 }
 
-use tauri::{Manager, PhysicalPosition, PhysicalSize};
+use tauri::{Manager, PhysicalPosition, PhysicalSize, Emitter};
+use tauri_plugin_global_shortcut::{GlobalShortcutExt, Code, Modifiers, Shortcut, ShortcutState};
 
 fn main() {
     tauri::Builder::default()
+        .plugin(
+            tauri_plugin_global_shortcut::Builder::new()
+                .with_handler(|app, _shortcut, event| {
+                    if event.state() == ShortcutState::Pressed {
+                        let _ = app.emit("toggle-nav", ());
+                    }
+                })
+                .build(),
+        )
         .setup(|app| {
             let window = app.get_webview_window("main").unwrap();
 
@@ -33,6 +42,10 @@ fn main() {
                     let _ = window.set_position(PhysicalPosition::new(x, y));
                 }
             }
+
+            // Alt + Espacio -> Toggle nav
+            let shortcut = Shortcut::new(Some(Modifiers::ALT), Code::Space);
+            app.global_shortcut().register(shortcut).unwrap();
 
             Ok(())
         })
