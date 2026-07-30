@@ -12,7 +12,9 @@
         {{ horas }}<span class="separador">:</span>{{ minutos }}
       </div>
     </div>
-    <div class="paneles"></div>
+    <div class="paneles">
+      <h2>coso</h2>
+    </div>
   </nav>
 </template>
 
