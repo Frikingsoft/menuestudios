@@ -8,6 +8,8 @@ mod commands {
     pub mod reiniciar;
     pub mod cerrar;
     pub mod ram;
+    pub mod cpu;
+    pub mod disco;
 }
 
 use tauri::{Manager, PhysicalPosition, PhysicalSize, Emitter};
@@ -44,7 +46,7 @@ fn main() {
             }
 
             // Alt + Espacio -> Toggle nav
-            let shortcut = Shortcut::new(Some(Modifiers::ALT), Code::Space);
+           let shortcut = Shortcut::new(Some(Modifiers::SUPER), Code::Space);
             app.global_shortcut().register(shortcut).unwrap();
 
             Ok(())
@@ -57,6 +59,9 @@ fn main() {
             commands::reiniciar::reiniciar_sistema,
             commands::cerrar::cerrar_sesion,
             commands::ram::get_ram_percentage,
+            commands::cpu::get_cpu_percentage_int,
+            commands::disco::get_disk_percentage,      
+            commands::disco::get_disk_percentage_int,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

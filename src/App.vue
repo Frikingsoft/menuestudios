@@ -10,17 +10,18 @@
     <div class="reloj-container">
       <div class="reloj-glow"></div>
       <div class="reloj">
-        {{ horas }}<span class="separador">:</span>{{ minutos }}
+        <h2>{{ horas }}<span class="separador">:</span>{{ minutos }}</h2>
       </div>
     </div>
     <div class="paneles">
-      <h2>coso</h2>
+     <Barra2/>
     </div>
   </nav>
 </template>
 
 <script setup>
 import Barra from "./componentes/Barra.vue"
+import Barra2 from "./componentes/Barra2.vue"
 import { ref, onMounted, onUnmounted } from 'vue'
 import { listen } from '@tauri-apps/api/event'
 
@@ -116,13 +117,13 @@ onUnmounted(() => {
     justify-content: center;
     align-items: center;
     position: relative;
-    height: 48px;
+    height: 40px;
   }
 
   .reloj-glow {
     position: absolute;
     width: 150px;
-    height: 48px;
+    height: 40px;
     border-radius: 12px;
     background: rgba(138, 43, 226, 0.15);
     filter: blur(20px);
@@ -131,9 +132,12 @@ onUnmounted(() => {
 
   .reloj {
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     z-index: 1;
     font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
-    font-size: 30px;
+    font-size: 20px;
     font-weight: 900;
     color: #c084fc;
     letter-spacing: 6px;
@@ -216,6 +220,7 @@ onUnmounted(() => {
     mask-composite: exclude;
     -webkit-mask-composite: xor;
     padding: 1px;
+    
   }
 
   .separador {
@@ -240,8 +245,12 @@ onUnmounted(() => {
   }
 
   .paneles {
-    grid-column: 8 / 12; 
+    grid-column: 8 / 12;
+    width: 100%; 
     display: flex;
     align-items: center;
+   
+    align-items: center;
+    position: absolute;
   }
 </style>
