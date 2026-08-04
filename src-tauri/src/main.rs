@@ -10,6 +10,7 @@ mod commands {
     pub mod ram;
     pub mod cpu;
     pub mod disco;
+    pub mod sonido;
 }
 
 use tauri::{Manager, PhysicalPosition, PhysicalSize, Emitter};
@@ -62,6 +63,9 @@ fn main() {
             commands::cpu::get_cpu_percentage_int,
             commands::disco::get_disk_percentage,      
             commands::disco::get_disk_percentage_int,
+            commands::sonido::get_volume,      
+            commands::sonido::set_volume,      
+            commands::sonido::toggle_mute,     
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

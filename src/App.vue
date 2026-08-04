@@ -5,7 +5,7 @@
     </div>
     <div class="iconos">
       <Barra/>
-      {{ mostrar }}            
+                 
     </div>
     <div class="reloj-container">
       <div class="reloj-glow"></div>
