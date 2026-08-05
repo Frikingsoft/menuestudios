@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dispositivos de audio</title>
+  <script type="module">
+    // Importar Tauri correctamente
+    import { invoke } from '@tauri-apps/api/core';
+    
+    // Hacerlo global para el resto del código
+    window.__TAURI_INVOKE = invoke;
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: rgba(10, 10, 30, 0.96);
+      backdrop-filter: blur(20px);
+      color: white;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    
+    .popup-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+    }
+    
+    .popup-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(131, 100, 255, 0.1);
+      flex-shrink: 0;
+    }
+    
+    .popup-titulo {
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 600;
+      font-size: 13px;
+    }
+    
+    .popup-cerrar {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 2px 8px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+    
+    .popup-cerrar:hover {
+      color: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .popup-body {
+      padding: 12px 16px 16px 16px;
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .dispositivo-actual {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      background: rgba(131, 100, 255, 0.06);
+      border-radius: 6px;
+      margin-bottom: 10px;
+      border: 1px solid rgba(131, 100, 255, 0.06);
+      flex-shrink: 0;
+    }
+    
+    .label {
+      color: rgba(255, 255, 255, 0.35);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 600;
+    }
+    
+    .valor {
+      color: #c084fc;
+      font-size: 12px;
+      font-weight: 500;
+      font-family: 'Courier New', monospace;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    .dispositivos-lista {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      min-height: 60px;
+    }
+    
+    .dispositivos-lista::-webkit-scrollbar {
+      width: 3px;
+    }
+    
+    .dispositivos-lista::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 3px;
+    }
+    
+    .dispositivos-lista::-webkit-scrollbar-thumb {
+      background: rgba(131, 100, 255, 0.3);
+      border-radius: 3px;
+    }
+    
+    .dispositivo-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 10px;
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    
+    .dispositivo-item:hover {
+      background: rgba(131, 100, 255, 0.08);
+      color: rgba(255, 255, 255, 0.85);
+    }
+    
+    .dispositivo-item.activo {
+      background: rgba(131, 100, 255, 0.12);
+      color: #c084fc;
+    }
+    
+    .dispositivo-icon {
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    
+    .dispositivo-nombre {
+      flex: 1;
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 12px;
+    }
+    
+    .dispositivo-check {
+      color: #a855f7;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    
+    .btn-refrescar {
+      width: 100%;
+      padding: 6px;
+      background: rgba(131, 100, 255, 0.04);
+      border: 1px solid rgba(131, 100, 255, 0.08);
+      border-radius: 6px;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      flex-shrink: 0;
+    }
+    
+    .btn-refrescar:hover {
+      background: rgba(131, 100, 255, 0.08);
+      border-color: rgba(131, 100, 255, 0.2);
+      color: rgba(255, 255, 255, 0.7);
+    }
+  </style>
+</head>
+<body>
+  <div class="popup-container" id="app">
+    <div class="popup-header">
+      <span class="popup-titulo">🎧 Dispositivos de audio</span>
+      <button class="popup-cerrar" id="btn-cerrar">✕</button>
+    </div>
+    
+    <div class="popup-body">
+      <div class="dispositivo-actual">
+        <span class="label">Actual:</span>
+        <span class="valor" id="dispositivo-actual">Cargando...</span>
+      </div>
+      
+      <div class="dispositivos-lista" id="lista-dispositivos">
+        <div style="color: rgba(255,255,255,0.3); text-align: center; padding: 20px;">
+          Cargando dispositivos...
+        </div>
+      </div>
+      
+      <button class="btn-refrescar" id="btn-refrescar">🔄 Refrescar lista</button>
+    </div>
+  </div>
+  
+  <script type="module">
+    import { invoke } from '@tauri-apps/api/core';
+    
+    let dispositivoActivo = 'Master';
+    
+    async function cargarDispositivos() {
+      try {
+        console.log('🔊 Cargando dispositivos...');
+        const devices = await invoke('get_audio_devices');
+        console.log('📋 Dispositivos obtenidos:', devices);
+        
+        const lista = document.getElementById('lista-dispositivos');
+        const actual = document.getElementById('dispositivo-actual');
+        
+        if (devices && devices.length > 0) {
+          if (!dispositivoActivo || !devices.includes(dispositivoActivo)) {
+            dispositivoActivo = devices[0];
+          }
+          actual.textContent = dispositivoActivo;
+          
+          lista.innerHTML = '';
+          devices.forEach(device => {
+            const btn = document.createElement('button');
+            btn.className = 'dispositivo-item' + (device === dispositivoActivo ? ' activo' : '');
+            btn.innerHTML = `
+              <span class="dispositivo-icon">${device === dispositivoActivo ? '🔊' : '🔇'}</span>
+              <span class="dispositivo-nombre">${device}</span>
+              ${device === dispositivoActivo ? '<span class="dispositivo-check">✓</span>' : ''}
+            `;
+            btn.addEventListener('click', () => seleccionarDispositivo(device));
+            lista.appendChild(btn);
+          });
+        } else {
+          actual.textContent = 'Ninguno';
+          lista.innerHTML = '<div style="color: rgba(255,255,255,0.3); text-align: center; padding: 20px;">No hay dispositivos disponibles</div>';
+        }
+      } catch (error) {
+        console.error('❌ Error al obtener dispositivos:', error);
+        document.getElementById('lista-dispositivos').innerHTML = 
+          `<div style="color: rgba(255,100,100,0.5); text-align: center; padding: 20px;">Error: ${error}</div>`;
+      }
+    }
+    
+    async function seleccionarDispositivo(device) {
+      try {
+        console.log('🔄 Seleccionando dispositivo:', device);
+        await invoke('set_audio_device', { deviceName: device });
+        dispositivoActivo = device;
+        await cargarDispositivos();
+      } catch (error) {
+        console.error('❌ Error al cambiar dispositivo:', error);
+        alert('Error al cambiar dispositivo: ' + error);
+      }
+    }
+    
+    function cerrarPopup() {
+      invoke('close_audio_popup');
+    }
+    
+    // Inicializar
+    console.log('🎵 Popup de audio iniciado');
+    cargarDispositivos();
+    
+    document.getElementById('btn-cerrar').addEventListener('click', cerrarPopup);
+    document.getElementById('btn-refrescar').addEventListener('click', cargarDispositivos);
+    
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        cerrarPopup();
+      }
+    });
+  </script>
+</body>
+</html>
